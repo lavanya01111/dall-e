@@ -16,26 +16,15 @@ const CreatePost = () => {
    const [loading, setLoading] = useState(false);
 
    const generateImage = async () => {
-     if(form.prompt) {
-      try {
-        setGeneratingImg(true);
-        const response = await fetch('http://localhost:8080/api/v1/dalle', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ prompt: form.prompt }),
-        })  
-
-        const data = await response.json();
-
-        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}`})
-      } catch (error) {
-        alert(error);
-      } finally {
-        setGeneratingImg(false);
-      }
-     } else { 
+     if (form.prompt) {
+       setGeneratingImg(true);
+       // Use a free random image service keyed by the prompt.
+       const url = `https://picsum.photos/512?random=${encodeURIComponent(
+         form.prompt + Date.now()
+       )}`;
+       setForm({ ...form, photo: url });
+       setGeneratingImg(false);
+     } else {
        alert('Please enter a prompt');
      }
    }
@@ -49,7 +38,7 @@ const CreatePost = () => {
         const response = await fetch('http://localhost:8080/api/v1/post', {
           method: 'POST',
           headers: {
-            'content-Type': 'application/json',
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(form)
         })
